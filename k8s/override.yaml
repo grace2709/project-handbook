@@ -1,0 +1,34 @@
+catalog:
+  db:
+    endpoint: <MYSQL_HOST>       # replace with actual endpoint
+    name: catalogdb
+    existingSecret: catalog-db-secret
+  mysql:
+    enabled: false               
+# k8s/values-override.yaml
+catalog:
+  db:
+    endpoint: <MYSQL_HOST>       # replace with actual endpoint
+    name: catalogdb
+    existingSecret: catalog-db-secret
+  mysql:
+    enabled: false               # disable in-cluster MySQL
+
+orders:
+  db:
+    endpoint: <POSTGRES_HOST>    # replace with actual endpoint
+    name: ordersdb
+    existingSecret: orders-db-secret
+  postgresql:
+    enabled: false               # disable in-cluster PostgreSQL
+
+carts:
+  dynamodb:
+    tableName: <DYNAMO_TABLE>    # replace with actual table name
+    region: us-east-1
+    createTable: false
+
+ui:
+  service:
+    type: ClusterIP
+
