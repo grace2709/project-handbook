@@ -1,0 +1,34 @@
+# k8s/rbac-dev-view.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: bedrock-dev-view-binding
+subjects:
+  - kind: User
+    name: "bedrock-dev-view"   # must match IAM user name exactly
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view                   # built-in read-only ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+
+# After terraform apply, run:
+aws eks update-kubeconfig --region us-east-1 --name project-bedrock-cluster
+
+# Edit the aws-auth ConfigMap to add the dev user:
+kubectl edit configmap aws-auth -n kube-system
+
+# Add under mapUsers:
+mapUsers: |
+  - userarn: arn:aws:iam::YOUR_ACCOUNT_ID:user/bedrock-dev-view
+    username: bedrock-dev-view
+    groups:
+      - view
+
+# Then apply the RBAC binding:
+kubectl apply -f k8s/rbac-dev-view.yaml
+
+# Verify (configure CLI with dev user's credentials first):
+kubectl get pods -n retail-app    # should succeed
+kubectl delete pod -n retail-app <any-pod>  # should fail: forbidden
+

@@ -1,0 +1,13 @@
+# modules/dynamodb/main.tf
+resource "aws_dynamodb_table" "carts" {
+  name         = "${var.project_name}-carts"
+  billing_mode = "PAY_PER_REQUEST"   # no provisioned cost
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  tags = { Name = "${var.project_name}-carts" }
+}
